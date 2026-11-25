@@ -48,7 +48,7 @@ xattr -dr com.apple.quarantine /Applications/Wisp.app
 ## Features
 
 - The real soundcloud.com: your account, likes, playlists and uploads. Sign in with email, Google or Apple
-- SoundCloud's own dark theme
+- SoundCloud's own dark theme, without the "Go mobile" app-store badges and footer links in the sidebar
 - Media keys, AirPods and Control Center play, pause, skip and seek
 - Closing the window keeps the music playing; the Dock icon brings it back
 - Opens on the page where you left off
@@ -166,7 +166,7 @@ xattr -dr com.apple.quarantine /Applications/Wisp.app
 ### Что умеет
 
 - Настоящий soundcloud.com: твой аккаунт, лайки, плейлисты и загрузки. Вход по почте, через Google или Apple
-- Тёмная тема самого SoundCloud
+- Тёмная тема самого SoundCloud, без значков «Go mobile» и ссылок внизу боковой панели
 - Медиаклавиши, AirPods и Пункт управления ставят на паузу, переключают и перематывают
 - Если закрыть окно, музыка продолжит играть, а иконка в Dock вернёт окно
 - Открывается на той странице, где ты остановился

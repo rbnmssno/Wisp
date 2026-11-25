@@ -35,7 +35,7 @@ final class PlayerWindow: NSWindowController, NSWindowDelegate, WKNavigationDele
         } else {
             Log.error("bridge.js missing from the app")
         }
-        content.addUserScript(WKUserScript(source: Self.hideScrollbarsScript, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+        content.addUserScript(WKUserScript(source: Self.pageStyleScript, injectionTime: .atDocumentStart, forMainFrameOnly: true))
         if Args.has("--mute") {
             // Tests: silent while something plays (volume 0, not muted, so the system still sees playback).
             content.addUserScript(WKUserScript(source: Self.muteScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
@@ -263,11 +263,13 @@ final class PlayerWindow: NSWindowController, NSWindowDelegate, WKNavigationDele
         unsafeBitCast(view.method(for: selector), to: Setter.self)(view, selector, false)
     }
 
-    /// No scroll bars: the page scrolls as before, without the bar that appears on the right.
-    static let hideScrollbarsScript = """
+    /// The app's own touches to the page: no scroll bars (the page scrolls as before, without the bar on
+    /// the right), and no "Go mobile" app-store badges or legal links in the right sidebar.
+    static let pageStyleScript = """
     (() => {
       const style = document.createElement("style");
-      style.textContent = "::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; } * { scrollbar-width: none !important; }";
+      style.textContent = "::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; } * { scrollbar-width: none !important; } " +
+        ".sidebarModule.mobileApps, .l-sidebar-right .l-footer { display: none !important; }";
       const add = () => (document.head || document.documentElement).appendChild(style);
       if (document.documentElement) add(); else document.addEventListener("readystatechange", add, { once: true });
     })();
