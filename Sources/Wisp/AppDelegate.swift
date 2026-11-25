@@ -4,6 +4,7 @@ import WebKit
 final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidation {
     private(set) var player: PlayerWindow!
     private let monobrow = MonobrowPublisher()
+    private let onePlayer = OnePlayer()
     private(set) var state = PlayerState()
     private var lastPublished = PlayerState()
     /// Development: a test copy beside the real Wisp. It shares nothing: its own website data and
@@ -30,7 +31,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidation {
             if name == "refresh" { self.lastPublished = self.state; self.monobrow.publish(self.state); return }
             self.player.command(name, value)
         }
+        // Spotify started playing: Wisp makes way.
+        onePlayer.onSpotifyStarted = { [weak self] in
+            guard let self, self.state.playing else { return }
+            Log.debug("Spotify started, pausing")
+            self.player.command("pause")
+        }
         if !isolated {
+            onePlayer.start()
             monobrow.start()
             // A Monobrow that is already running learns that Wisp is here.
             monobrow.publish(state)
@@ -56,9 +64,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidation {
         switch body["type"] as? String {
         case "state":
             let s = PlayerState(message: body)
+            let started = s.playing && !state.playing
             state = s
             Log.debug("state: \(s.playing ? "▶" : "Ⅱ") \(s.artist) — \(s.title) \(Int(s.position))/\(Int(s.duration)) s, liked \(s.liked), volume \(Int(s.volume * 100))")
             guard !isolated else { return }
+            if started { onePlayer.wispStarted() }
             // Monobrow hears only real changes; it counts the position on by itself.
             if !s.sameAs(lastPublished) {
                 lastPublished = s
@@ -89,9 +99,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuItemValidation {
     @objc func zoomReset(_ sender: Any?) { player.webView.pageZoom = 1 }
     @objc func showPlayer(_ sender: Any?) { player.show() }
     @objc func toggleAdBlock(_ sender: Any?) { player.setAdBlock(!AdBlock.enabled) }
+    @objc func toggleOnePlayer(_ sender: Any?) { OnePlayer.enabled.toggle() }
 
     func validateMenuItem(_ item: NSMenuItem) -> Bool {
         if item.action == #selector(toggleAdBlock(_:)) { item.state = AdBlock.enabled ? .on : .off }
+        if item.action == #selector(toggleOnePlayer(_:)) { item.state = OnePlayer.enabled ? .on : .off }
         return true
     }
     @objc func showCurrentTrack(_ sender: Any?) {
@@ -110,6 +122,7 @@ enum Menus {
         app.addItem(withTitle: tr("О программе Wisp", "About Wisp"), action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
         app.addItem(.separator())
         item(app, tr("Блокировать рекламу", "Block Ads"), #selector(AppDelegate.toggleAdBlock(_:)), "", target: target)
+        item(app, tr("Не играть вместе со Spotify", "Don't Play Alongside Spotify"), #selector(AppDelegate.toggleOnePlayer(_:)), "", target: target)
         app.addItem(.separator())
         app.addItem(withTitle: tr("Скрыть Wisp", "Hide Wisp"), action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
         let others = app.addItem(withTitle: tr("Скрыть остальные", "Hide Others"), action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: "h")

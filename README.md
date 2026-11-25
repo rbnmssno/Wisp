@@ -52,6 +52,7 @@ xattr -dr com.apple.quarantine /Applications/Wisp.app
 - Media keys, AirPods and Control Center play, pause, skip and seek
 - Closing the window keeps the music playing; the Dock icon brings it back
 - Opens on the page where you left off
+- Never plays over Spotify: start music in one and the other pauses (Wisp → Don't Play Alongside Spotify turns it off)
 - Blocks audio ads, ad slots, promoted tracks and upsell banners (Wisp → Block Ads turns it off)
 - Shows what plays on the MacBook notch together with [Monobrow](https://github.com/rbnmssno/Monobrow), likes included
 - English or Russian menus, following the system language
@@ -81,6 +82,8 @@ A small script on the page reads what plays from the Media Session the site fill
 Control Center, media keys and AirPods use WebKit's own Now Playing, filled from the page's Media Session. Play, pause and seek from the system go through the site's buttons as well.
 
 Ad blocking uses WebKit's content blocker, the engine behind Safari's ad blockers. Before each track the player asks `api-v2.soundcloud.com/audio-ads` whether to play an ad; that request is blocked, so no ad reaches the player. The rules follow EasyList, uBlock Origin and AdGuard. Sign-in, the site's bot check and the cookie dialog are left alone.
+
+Spotify announces every play and pause with a distributed notification, `com.spotify.client.PlaybackStateChanged`. When it starts playing, Wisp pauses. When Wisp starts, it pauses Spotify with an Apple Event, the same `pause` command Spotify's scripting dictionary offers, so macOS asks once whether Wisp may control Spotify. The event goes out only while Spotify is open, so it never launches Spotify.
 
 Monobrow learns what plays from a distributed notification, `app.wisp.Wisp.PlaybackStateChanged`, with the same keys Spotify uses, and sends its buttons back on `app.wisp.Wisp.Command`.
 
@@ -132,6 +135,7 @@ The binary is `dist/Wisp.app/Contents/MacOS/Wisp`.
 | `Resources/bridge.js` | The page script: what plays, and the commands |
 | `Sources/Wisp/AdBlock.swift` | The ad blocking rules |
 | `Sources/Wisp/MonobrowLink.swift` | The link to Monobrow |
+| `Sources/Wisp/OnePlayer.swift` | Pausing Spotify and Wisp for each other |
 | `Sources/Wisp/AppDelegate.swift` | Menus and shortcuts |
 | `Sources/Wisp/DevProbe.swift` | The development switches |
 
@@ -166,6 +170,7 @@ xattr -dr com.apple.quarantine /Applications/Wisp.app
 - Медиаклавиши, AirPods и Пункт управления ставят на паузу, переключают и перематывают
 - Если закрыть окно, музыка продолжит играть, а иконка в Dock вернёт окно
 - Открывается на той странице, где ты остановился
+- Не играет одновременно со Spotify: включишь музыку в одном, другой встанет на паузу (выключается в меню Wisp → «Не играть вместе со Spotify»)
 - Блокирует аудиорекламу, рекламные места, продвигаемые треки и баннеры с предложением подписки (выключается в меню Wisp → «Блокировать рекламу»)
 - Вместе с [Monobrow](https://github.com/rbnmssno/Monobrow) показывает, что играет, в вырезе MacBook, и лайкает оттуда же
 - Меню на русском или английском, по языку системы

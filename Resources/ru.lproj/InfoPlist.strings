@@ -1,2 +1,3 @@
 "CFBundleDisplayName" = "Wisp";
 "CFBundleName" = "Wisp";
+"NSAppleEventsUsageDescription" = "Wisp ставит Spotify на паузу, когда ты включаешь музыку в Wisp, чтобы они не играли одновременно.";
