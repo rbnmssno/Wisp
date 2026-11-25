@@ -1,0 +1,43 @@
+name: Bug report
+description: Something in Wisp doesn't work as it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Можно писать по-русски.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead. A screenshot or a short screen recording helps a lot.
+    validations:
+      required: true
+  - type: input
+    id: wisp
+    attributes:
+      label: Wisp version
+      description: Wisp menu → About Wisp.
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      placeholder: "macOS 26.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: account
+    attributes:
+      label: SoundCloud account
+      options:
+        - Signed in, free
+        - Signed in, Go or Go+
+        - Not signed in
+  - type: checkboxes
+    id: ads
+    attributes:
+      label: Ad blocking
+      options:
+        - label: The problem goes away with Wisp → Block Ads turned off

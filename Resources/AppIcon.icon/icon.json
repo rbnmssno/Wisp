@@ -1,0 +1,28 @@
+{
+  "fill": {
+    "automatic-gradient": "srgb:0.13000,0.11000,0.16000,1.00000"
+  },
+  "groups": [
+    {
+      "layers": [
+        {
+          "image-name": "wave.svg",
+          "name": "wave",
+          "glass": true
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "translucency": {
+        "enabled": true,
+        "value": 0.2
+      },
+      "specular": true
+    }
+  ],
+  "supported-platforms": {
+    "squares": "shared"
+  }
+}
